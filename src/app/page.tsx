@@ -1,44 +1,29 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { motion } from "framer-motion";
-import { Menubar } from "@/components/ui/menubar";
-import { NavigationMenu } from "@/components/ui/navigation-menu";
 import { Input } from "@/components/ui/input";
 import { use, useEffect, useState } from "react";
 import Nav from "@/components/Nav";
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const [search, setSearch] = useState<string>("");
   const [user, setUser] = useState<string>() as any;
 
-  const googleSignIn = () => {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider);
-  };
-
-  const logout = () => {
-    signOut(auth);
-  };
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-    });
-    return unsubscribe;
-  }, []);
-
-
-  
-
-
-
-  function handleSearch() {
-    console.log(search);
+ 
+  async function handleSearch() {
+    const response = await fetch(`/api/getImgs`);
+    const data = await response.json();
+    console.log(data);
   }
+
 
   return (
     <main className="bg-white dark:bg-black text-black dark:text-white w-full min-h-screen">
