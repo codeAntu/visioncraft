@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { auth } from "@/lib/firebase";
-import { useRouter } from "next/router";
 import { onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 export default function Nav() {
   const [user, setUser] = useState<string>() as any;
-  // const router = useRouter(); // Uncomment this line to initialize useRouter
+
+  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -32,8 +33,8 @@ export default function Nav() {
       <div className="flex gap-5 items-center">
         <img src="./vercel.svg" alt="" className="aspect-square w-5" />
         <div>Vision Craft </div>
-        {/* <Button onClick={() => router.push("/")}>Home</Button> */}
-        {/* <Button onClick={() => router.push("/generation")}>Generation</Button> */}
+        <Button onClick={() => router.push("/")}>Home</Button>
+        <Button onClick={() => router.push("/generation")}  >Generation</Button>
       </div>
       <div className="flex gap-5 items-center">
         {user ? (
