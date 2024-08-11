@@ -12,18 +12,24 @@ import {
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/router";
+import axios from "axios";
 
 export default function Home() {
   const [search, setSearch] = useState<string>("");
   const [user, setUser] = useState<string>() as any;
 
- 
   async function handleSearch() {
-    const response = await fetch(`/api/getImgs`);
-    const data = await response.json();
-    console.log(data);
-  }
+    console.log("searching for", search);
 
+    axios
+      .get("/api/getImgs")
+      .then((response) => {
+        // Handle response
+      })
+      .catch((error) => {
+        // Handle error
+      });
+  }
 
   return (
     <main className="bg-white dark:bg-black text-black dark:text-white w-full min-h-screen">
