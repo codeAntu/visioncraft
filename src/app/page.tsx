@@ -19,13 +19,11 @@ export default function Home() {
   const [user, setUser] = useState<string>() as any;
 
   async function handleSearch() {
-    const res = await axios.post("/api", search );
-
-
-
-    console.log( "data" , res.data);
+    // Corrected axios.get call
+    const res = await axios.get("/api/generate", { params: { query: search } });
+    console.log("data", res.data);
   }
-
+  
   return (
     <main className="bg-white dark:bg-black text-black dark:text-white w-full min-h-screen">
       <div>
