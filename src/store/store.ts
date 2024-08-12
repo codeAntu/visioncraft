@@ -1,12 +1,17 @@
-import { create } from 'zustand'
+import { create } from "zustand";
 
-type Store = {
-  count: number
-  inc: () => void
+interface Store {
+  user: any;
+  setUser: (user: any) => void;
 }
 
 const useStore = create<Store>()((set) => ({
-  count: 1,
-  inc: () => set((state) => ({ count: state.count + 1 })),
-}))
+  user: localStorage.getItem("user"),
+  setUser: (user) => {
+    localStorage.setItem("user", user.toString());
+    set({ user });
+  }
+}));
 
+
+export { useStore };

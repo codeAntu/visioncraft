@@ -4,15 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { use, useEffect, useRef, useState } from "react";
 import Nav from "@/components/Nav";
-import {
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithPopup,
-  signOut,
-} from "firebase/auth";
-import { auth } from "@/lib/firebase";
-import { useRouter } from "next/router";
 import axios from "axios";
+import { useStore } from "@/store/store";
 
 interface searchRes {
   search: string;
@@ -24,33 +17,51 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(false);
   const [searchRes, setSearchRes] = useState<searchRes[]>([]);
   const ref = useRef<HTMLDivElement>(null);
+  const user = useStore((state) => state.user);
+  const [history, setHistory] = useState<string[]>([]);
+  const [limitExceeded, setLimitExceeded] = useState<boolean>(false);
 
   async function handleSearch() {
-    // if (generate == "") return;
+    if (generate == "") return;
     setLoading(true);
-
     setSearchRes([...searchRes, { search: generate, imgs: [] }]);
-
     try {
       const res = await axios.get("/api/generate", {
-        params: { query: generate },
+        params: {
+          query: generate,
+          email: user.email,
+        },
       });
 
-      console.log("res", res.data);
+      if (res.data.error) {
+        setLimitExceeded(true);
+        setLoading(false);
+        return;
+      }
 
       setSearchRes([...searchRes, { search: generate, imgs: res.data }]);
-
       setTimeout(() => {
         ref.current?.scrollIntoView({ behavior: "smooth" });
       }, 200);
     } catch (err) {
       console.log("error", err);
     }
-
     setLoading(false);
   }
 
-  console.log("searchRes", searchRes);
+  async function handleHistory() {
+    try {
+      const res = await axios.get("/api/history", {
+        params: {
+          email: user.email,
+        },
+      });
+      console.log("history", res.data);
+      setHistory(res.data);
+    } catch (err) {
+      console.log("error", err);
+    }
+  }
 
   return (
     <main className="bg-white dark:bg-black text-black dark:text-white w-full min-h-screen">
@@ -58,6 +69,12 @@ export default function Home() {
         <Nav />
 
         <div className="px-5 py-10 flex flex-col gap-9">
+          {limitExceeded && (
+            <div className="bg-red-500 text-white p-2 rounded-3xl text-sm text-center">
+              You have exceeded the limit
+            </div>
+          )}
+
           {searchRes.map((res, i) => (
             <div key={i} className="flex flex-col gap-6">
               <div className="flex justify-end items-center pl-6 ">
@@ -81,10 +98,7 @@ export default function Home() {
               </div>
             </div>
           ))}
-          <div
-            ref={ref}
-            className="flex justify-center items-center h-32 "
-          >
+          <div ref={ref} className="flex justify-center items-center h-32 ">
             {loading && (
               <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
             )}
@@ -104,6 +118,12 @@ export default function Home() {
             className="bg-blue-600 text-white hover:bg-blue-700"
           >
             Search
+          </Button>
+          <Button
+            onClick={handleHistory}
+            className="bg-blue-600 text-white hover:bg-blue-700"
+          >
+            History
           </Button>
         </div>
       </div>

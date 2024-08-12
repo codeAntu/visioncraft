@@ -8,9 +8,12 @@ import {
   signOut,
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { useStore } from "@/store/store";
 
 export default function Nav() {
-  const [user, setUser] = useState<string>() as any;
+  const user = useStore((state) => state.user);
+
+  const setUser = useStore((state) => state.setUser);
 
   const router = useRouter();
 
@@ -26,11 +29,6 @@ export default function Nav() {
     await signInWithPopup(auth, provider);
     console.log("signed in");
   };
-
-  const handleSignOut = async () => {
-    await signOut(auth);
-  };
-
 
   return (
     <div className="flex justify-between items-center border-b border-black dark:bg-white px-5 py-3 text-sm">
