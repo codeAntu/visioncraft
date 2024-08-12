@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { auth } from "@/lib/firebase";
-import { onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
 import { useRouter } from "next/navigation";
 
 export default function Nav() {
@@ -26,7 +31,6 @@ export default function Nav() {
     await signOut(auth);
   };
 
-  console.log(user);
 
   return (
     <div className="flex justify-between items-center border-b border-black dark:bg-white px-5 py-3 text-sm">
@@ -34,11 +38,17 @@ export default function Nav() {
         <img src="./vercel.svg" alt="" className="aspect-square w-5" />
         <div>Vision Craft </div>
         <Button onClick={() => router.push("/")}>Home</Button>
-        <Button onClick={() => router.push("/generation")}  >Generation</Button>
+        <Button onClick={() => router.push("/generation")}>Generation</Button>
       </div>
       <div className="flex gap-5 items-center">
         {user ? (
-          <Button onClick={handleSignOut}>Logout</Button>
+          <Button
+            onClick={() => {
+              router.push("/profile");
+            }}
+          >
+            Profile
+          </Button>
         ) : (
           <Button onClick={handleSignIn}>Login</Button>
         )}

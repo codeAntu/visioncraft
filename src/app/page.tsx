@@ -19,16 +19,11 @@ export default function Home() {
   const [user, setUser] = useState<string>() as any;
 
   async function handleSearch() {
-    console.log("searching for", search);
+    const res = await axios.post("/api", search );
 
-    axios
-      .get("/api/getImgs")
-      .then((response) => {
-        // Handle response
-      })
-      .catch((error) => {
-        // Handle error
-      });
+
+
+    console.log( "data" , res.data);
   }
 
   return (
@@ -46,7 +41,10 @@ export default function Home() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <Button onClick={handleSearch}>Search</Button>
+          <Button
+            onClick={handleSearch}
+            className="bg-blue-600 text-white hover:bg-blue-700"
+          >Search</Button>
         </div>
       </div>
     </main>

@@ -1,6 +1,18 @@
-import { NextResponse } from "next/server";
+import { kv } from "@vercel/kv";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
+  const user = await kv.hgetall('user:me');
+  return NextResponse.json(user);
+}
 
-  return NextResponse.json({ message: "Hello World" });
+export async function POST(req : NextRequest, res : NextResponse) {
+
+  const search = await req.text();
+
+  console.log("search", search);
+  
+
+  const user = await kv.hgetall('user:me');
+  return NextResponse.json(user);
 }
