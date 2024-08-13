@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 
 export default function Profile() {
-  const [user, setUser] = useState<any>(null );
+  const [user, setUser] = useState<any>(null);
 
   const router = useRouter();
 
@@ -22,17 +22,13 @@ export default function Profile() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user ? user : null);
+      if (!user) {
+        router.push("/");
+      }
     });
+
     return unsubscribe;
   }, []);
-
-
-
-  useEffect(() => {
-    if (!user) {
-      router.push("/");
-    }
-  }, [user]);
 
   return (
     <div className="">

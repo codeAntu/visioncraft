@@ -5,7 +5,7 @@ async function saveGeneration(email: string, generationData: string) {
   const timestamp = new Date().toISOString();
   const key = `user:${email}:generations`;
   await kv.lpush(key, JSON.stringify({ data: generationData, timestamp }));
-  await kv.ltrim(key, 0, 9); 
+  await kv.ltrim(key, 0, 9);
 }
 
 async function getGenerations(email: string) {
@@ -19,6 +19,10 @@ export async function GET(req: NextRequest) {
   const generate = req.nextUrl.searchParams.get("query");
   const email = req.nextUrl.searchParams.get("email");
 
+  if (!email) {
+    return NextResponse.json({ error: "Email is required" });
+  }
+
   if (email && generate) {
     const history = await getGenerations(email);
     let count = 0;
@@ -30,11 +34,11 @@ export async function GET(req: NextRequest) {
       }
     });
 
-    if (count >= 30) {
+    if (count >= 3) {
       return NextResponse.json({ error: "You have exceeded the limit" });
     }
 
-    await saveGeneration(email, generate); 
+    await saveGeneration(email, generate);
     console.log("Saved generation for user", email);
   }
   const images = [

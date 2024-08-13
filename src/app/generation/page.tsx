@@ -4,11 +4,16 @@ import Nav from "@/components/Nav";
 import { useEffect, useState } from "react";
 
 export default function Generation() {
-  
   return (
-    <div className="bg-blue-400 min-h-screen">
+    <div className="min-h-screen">
       <Nav />
-      <div>Generation</div>
+      <div className="flex gap-3 flex-col items-center justify-center py-24">
+        <div className="text-2xl font-semibold">Generation</div>
+
+        <div className="text-black/70">
+          Generated images will be add here...
+        </div>
+      </div>
     </div>
   );
 }

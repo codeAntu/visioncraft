@@ -7,6 +7,8 @@ import Nav from "@/components/Nav";
 import axios from "axios";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { errorMonitor } from "events";
+import { Send } from "lucide-react"
 
 interface searchRes {
   search: string;
@@ -19,31 +21,39 @@ export default function Home() {
   const [searchRes, setSearchRes] = useState<searchRes[]>([]);
   const ref = useRef<HTMLDivElement>(null);
   const [history, setHistory] = useState<string[]>([]);
-  const [limitExceeded, setLimitExceeded] = useState<boolean>(false);
   const [user, setUser] = useState<any>(null);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user ? user : null);
     });
+
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      handleHistory();
+    }
+  }, [user, searchRes]);
 
   async function handleSearch() {
     if (generate == "") return;
     setLoading(true);
     setSearchRes([...searchRes, { search: generate, imgs: [] }]);
+    setGenerate("");
+
     try {
       const res = await axios.get("/api/generate", {
         params: {
           query: generate,
-          email: user.email,
+          email: user ? user.email : "",
         },
       });
 
       if (res.data.error) {
-        setLimitExceeded(true);
-        setLoading(false);
+        setError(res.data.error);
         return;
       }
 
@@ -53,8 +63,9 @@ export default function Home() {
       }, 200);
     } catch (err) {
       console.log("error", err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function handleHistory() {
@@ -80,12 +91,6 @@ export default function Home() {
         <Nav />
 
         <div className="px-5 py-10 flex flex-col gap-9">
-          {limitExceeded && (
-            <div className="bg-red-500 text-white p-2 rounded-3xl text-sm text-center">
-              You have exceeded the limit
-            </div>
-          )}
-
           {searchRes.map((res, i) => (
             <div key={i} className="flex flex-col gap-6">
               <div className="flex justify-end items-center pl-6 ">
@@ -117,20 +122,32 @@ export default function Home() {
               <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
             )}
           </div>
-          <div className="h-28 bg-red-400">
-
-          </div>
+          <div className="h-56 "></div>
         </div>
 
-        <div className="fixed bottom-0 pb-4 pt-3 border-t border-black/5 left-0 px-6 w-full flex flex-col gap-1.5 items-center bg-white">
+        <div className="fixed bottom-0 left-0 w-full flex flex-col gap-1.5 items-center bg-white">
           <div>
-            <div className="flex flex-row flex-wrap bg-slate-50  font-medium text-black/80 px-4 py-2 rounded-3xl text-xs gap-2 items-center justify-center ">
-              {history.map((h, i) => (
-                <div key={i} className=" bg-slate-200 rounded-2xl px-6 py-2 ">
-                  <p className="">{h}</p>
-                </div>
-              ))}
-            </div>
+            {error && (
+              <div className="bg-red-500 text-white p-2 px-6 rounded-3xl text-sm text-center">
+                {error}
+              </div>
+            )}
+          </div>
+
+          <div>
+            {history && (
+              <div className="flex flex-row border-t pt-3 border-black/5 flex-wrap bg-slate-50  font-medium text-black/80 px-4 py-2 rounded-3xl text-xs gap-2 items-center justify-center ">
+                {history.map((h, i) => (
+                  <button
+                    key={i}
+                    className=" bg-slate-200 rounded-2xl px-6 py-1.5 text-black/70"
+                    onClick={() => setGenerate(h)}
+                  >
+                    <p className="">{h}</p>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex pb-4 pt-3 border-t border-black/5 left-0 px-6 w-full gap-1.5 items-center bg-white">
@@ -139,19 +156,19 @@ export default function Home() {
               placeholder="Search"
               className=""
               value={generate}
-              onChange={(e) => setGenerate(e.target.value)}
+              onChange={(e) => {
+                if (error) setError("");
+                setGenerate(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearch();
+              }}
             />
             <Button
               onClick={handleSearch}
               className="bg-blue-600 text-white hover:bg-blue-700"
             >
-              Search
-            </Button>
-            <Button
-              onClick={handleHistory}
-              className="bg-blue-600 text-white hover:bg-blue-700"
-            >
-              History
+              <Send />
             </Button>
           </div>
         </div>

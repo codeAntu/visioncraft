@@ -10,15 +10,11 @@ import {
   signOut,
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
-// import { useStore } from "@/store/store";
 
 export default function Nav() {
-  // const user = useStore((state) => state.user);
-  // const setUser = useStore((state) => state.setUser);
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
 
-  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user ? user : null);
@@ -32,11 +28,10 @@ export default function Nav() {
     console.log("signed in");
   };
 
-
   return (
     <div className="flex justify-between items-center border-b border-black/5 px-5 py-3 text-sm">
       <div className="flex gap-5 items-center">
-        <img src="./vercel.svg" alt="" className="aspect-square w-5" />
+        <img src="./next.svg" alt="" className="aspect-square w-5" />
         <div>Vision Craft </div>
         <div className="flex gap-2 items-center ">
           <Button
