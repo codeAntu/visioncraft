@@ -6,46 +6,57 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { Butterfly_Kids } from "next/font/google";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 export default function Profile() {
-  const [user, setUser] = useState<string>() as any;
+  const [user, setUser] = useState<any>(null );
+
   const router = useRouter();
-
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //     if (user) setUser(user);
-  //     else router.push("/");
-  //   });
-  //   return unsubscribe;
-  // }, []);
-
-  
 
   function logout() {
     auth.signOut();
+    setUser(null);
     router.push("/");
   }
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user ? user : null);
+    });
+    return unsubscribe;
+  }, []);
+
+
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/");
+    }
+  }, [user]);
 
   return (
     <div className="">
       <Nav />
-
       {user ? (
-        <div className="profile">
-          <img src={user.photoURL} alt="Profile" />
-          <h2>{user.displayName}</h2>
-          <p>Email: {user.email}</p>
-          <p>Provider: Google</p>
-          {user.emailVerified && <p>Email Verified</p>}
+        <div className="profile flex flex-col items-center py-10 gap-4">
+          <img
+            src={user.photoURL}
+            alt="Profile"
+            className="rounded-full w-16"
+          />
+          <div className="text-center">
+            <h2 className="text-lg font-semibold">{user.displayName}</h2>
+            <p className="text-sm text-black/60">Email: {user.email}</p>
+          </div>
+          <Button onClick={logout} className="">
+            Logout
+          </Button>
         </div>
       ) : (
         <div className="profile">
           <h1>Sign in to view your profile</h1>
         </div>
       )}
-
-      <Button onClick={logout}>Logout</Button>
     </div>
   );
 }

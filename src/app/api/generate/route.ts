@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
       }
     });
 
-    if (count >= 3) {
+    if (count >= 30) {
       return NextResponse.json({ error: "You have exceeded the limit" });
     }
 

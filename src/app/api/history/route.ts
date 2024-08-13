@@ -4,8 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 async function getGenerations(email: string) {
   const key = `user:${email}:generations`;
   const generations = await kv.lrange(key, 0, -1);
-  const history = generations.map((gen: any) => JSON.stringify(gen));
-  return history;
+  return generations;
 }
 
 export async function GET(req: NextRequest) {

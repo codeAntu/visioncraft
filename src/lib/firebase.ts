@@ -19,6 +19,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
+if (typeof window !== 'undefined') {
+  // Initialize Firebase Analytics only if window is defined
+  const analytics = getAnalytics(app);
+}
 export const  auth = getAuth(app);
