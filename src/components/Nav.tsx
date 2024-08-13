@@ -38,13 +38,13 @@ export default function Nav() {
             onClick={() => router.push("/")}
             className="bg-white text-black border hover:bg-black/5"
           >
-            Home
+            Generation
           </Button>
           <Button
-            onClick={() => router.push("/generation")}
+            onClick={() => router.push("/explore")}
             className="bg-white text-black border hover:bg-black/5"
           >
-            Generation
+          Explore
           </Button>
         </div>
       </div>
