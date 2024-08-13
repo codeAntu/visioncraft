@@ -14,14 +14,11 @@ const firebaseConfig = {
   storageBucket: "visioncraft-a5fce.appspot.com",
   messagingSenderId: "1055638315617",
   appId: "1:1055638315617:web:b1d4a254ae82f960bd0020",
-  measurementId: "G-X9Z0K2MCY7"
+  measurementId: "G-X9Z0K2MCY7",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
-if (typeof window !== 'undefined') {
-  // Initialize Firebase Analytics only if window is defined
-  const analytics = getAnalytics(app);
-}
-export const  auth = getAuth(app);
+export const auth = getAuth(app);
